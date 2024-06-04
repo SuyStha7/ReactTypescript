@@ -51,7 +51,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormData(initialValues);
-    
+
     // use the form data and hit one API (any dummy API), simply make an API call and pass the name information to that API
     // call and that should be POST method
     console.log("formData:", formData);
@@ -69,7 +69,7 @@ const Login = () => {
   };
 
   return (
-    <div className='mt-20 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 flex items-center justify-center'>
+    <div className='mt-36 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 flex items-center justify-center'>
       <form
         className='flex flex-col gap-6'
         onSubmit={handleSubmit}>
