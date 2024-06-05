@@ -8,6 +8,25 @@ enum MODE {
   EMAIL_VERIFICATION = "EMAIL_VERIFICATION",
 }
 
+// Mock existing users and emails
+let existingUsers = ["existingUser1", "existingUser2"]; // Mock existing users
+let existingEmails = ["existing1@example.com", "existing2@example.com"]; // Mock existing emails
+
+const isValidEmail = (email: string) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
+
+const isValidPassword = (password: string) => {
+  const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // At least 8 characters, 1 letter and 1 number
+  return regex.test(password);
+};
+
+const isValidUsername = (username: string) => {
+  const regex = /^[a-zA-Z0-9_]{3,16}$/; // 3-16 characters, alphanumeric and underscores
+  return regex.test(username);
+};
+
 const Login = () => {
   const initialValues = {
     username: "",
@@ -48,24 +67,75 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormData(initialValues);
+  const validateForm = () => {
+    if (mode === MODE.REGISTER && !formData.username) {
+      return "Username is required";
+    }
+    if (mode === MODE.REGISTER && !isValidUsername(formData.username)) {
+      return "Username must be 3-16 characters long and contain only letters, numbers, and underscores";
+    }
+    if (!formData.email) {
+      return "Email is required";
+    }
+    if (!isValidEmail(formData.email)) {
+      return "Invalid email format";
+    }
+    if ((mode === MODE.LOGIN || mode === MODE.REGISTER) && !formData.password) {
+      return "Password is required";
+    }
+    if (mode === MODE.REGISTER && existingUsers.includes(formData.username)) {
+      return "Username already exists";
+    }
+    if (mode === MODE.REGISTER && existingEmails.includes(formData.email)) {
+      return "Email already exists";
+    }
+    if ((mode === MODE.LOGIN || mode === MODE.REGISTER) && !isValidPassword(formData.password)) {
+      return "Password must be at least 8 characters long and include at least one letter and one number";
+    }
+    if (mode === MODE.EMAIL_VERIFICATION && !formData.emailCode) {
+      return "Verification code is required";
+    }
+    return "";
+  };
 
-    // use the form data and hit one API (any dummy API), simply make an API call and pass the name information to that API
-    // call and that should be POST method
-    console.log("formData:", formData);
-    fetch("https://jsonplaceholder.typicode.com/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: formData.username,
-      }),
-    })
-      .then((res) => res.json())
-      .then(console.log);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Simulate a network request
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Mock response data
+      const data = { id: new Date().getTime(), ...formData };
+
+      console.log("Response data:", data);
+
+      if (mode === MODE.REGISTER) {
+        // Add the new user to the mock database
+        existingUsers.push(formData.username);
+        existingEmails.push(formData.email);
+
+        setMessage("Registration successful! Please login.");
+        setMode(MODE.LOGIN);
+      } else {
+        setMessage("Form submitted successfully!");
+      }
+      setFormData(initialValues);
+    } catch (err) {
+      setError("Failed to submit the form. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -170,7 +240,7 @@ const Login = () => {
           <div
             className='text-sm underline tracking-wide cursor-pointer'
             onClick={() => setMode(MODE.LOGIN)}>
-            Go to an login?
+            Go to login?
           </div>
         )}
 

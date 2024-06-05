@@ -15,10 +15,9 @@ const Navbar = () => {
       <div className='hidden md:flex items-center justify-between gap-8 h-full'>
         {/* left */}
         <div className='w-1/3 xl:w-1/2 flex items-center gap-12'>
-          <div className='hidden xl:flex gap-4'>
+          <div className='hidden md:flex gap-4 font-semibold uppercase'>
             <Link to='/'>Home</Link>
             <Link to='/form'>Login</Link>
-          
           </div>
         </div>
 
